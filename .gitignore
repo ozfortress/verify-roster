@@ -6,5 +6,6 @@ __dummy.html
 *.obj
 
 # verify-roster
+logs/
 verify-roster
 config/application.json
