@@ -1,4 +1,5 @@
 import std.conv;
+import std.path;
 import std.regex;
 import std.range;
 import std.array;
@@ -7,7 +8,6 @@ import std.algorithm;
 import std.exception;
 
 import vibe.d;
-//import vibe.data.json;
 
 const CONFIG_FILE = "config/application.json";
 
@@ -24,6 +24,19 @@ shared static this() {
 
     auto bindAddresses = settings["bind-addresses"].get!(Json[]).map!(j => j.to!string);
     serverSettings.bindAddresses = cast(string[])bindAddresses.array;
+
+    // Setup Logging
+    auto logsDir = settings["logs-dir"].to!string;
+    // Log access to the log file
+    serverSettings.accessLogFile = buildPath(logsDir, "verify-roster-access.log");
+
+    // Log to the proper log file
+    auto fileLogger = cast(shared)new FileLogger(buildPath(logsDir, "verify-roster.log"));
+    fileLogger.minLevel = LogLevel.info;
+    registerLogger(fileLogger);
+
+    // Better log formatting
+    setLogFormat(FileLogger.Format.thread, FileLogger.Format.thread);
 
     // Setup Routes
     auto router = new URLRouter;
