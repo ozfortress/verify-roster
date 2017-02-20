@@ -1,0 +1,4 @@
+.alert.alert-danger Error! #{message}
+
+- if (info)
+    p Extra information: #{info}

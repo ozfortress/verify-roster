@@ -1,0 +1,10 @@
+# D
+.dub
+docs.json
+__dummy.html
+*.o
+*.obj
+
+# verify-roster
+verify-roster
+config/application.json

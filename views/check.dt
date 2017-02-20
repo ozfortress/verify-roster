@@ -1,0 +1,67 @@
+- import std.range;
+- import std.algorithm;
+- import vibe.d;
+
+- void playerDisplay(P)(P player)
+    div
+        - static if (__traits(compiles, player.profile_url))
+            .pull-left
+                img(src="#{endpoint}#{player.profile_url}")
+        div
+            - static if (__traits(compiles, player.id))
+                a(href="#{endpoint}/users/#{player.id}", target="_blank")= player.name
+            - else
+                = player.name
+            .text-info.small
+                a(href="http://steamcommunity.com/profiles/#{player.steam_64}", target="_blank") [#{player.steam_id3}]
+
+h2.text-center #[a(href="#{endpoint}/matches/#{match.id}", target="_blank") #{match.home_team.name} vs #{match.away_team.name}]
+
+table.table
+    thead
+        tr
+            th In Game
+            th Home Team
+            th
+            th Away Team
+            th In Game
+        tr
+            th
+            th #[a(href="#{endpoint}/rosters/#{match.home_team.id}", target="_blank")= match.home_team.name]
+            th vs
+            th #[a(href="#{endpoint}/rosters/#{match.away_team.id}", target="_blank")= match.away_team.name]
+            th
+    tbody
+        - foreach (players; zip(match.home_team.players, match.away_team.players))
+            tr
+                - if (players[0].sourcePlayer.steam_id3)
+                    td.bg-success
+                        - playerDisplay(players[0].sourcePlayer);
+                - else
+                    td
+                td
+                    - playerDisplay(players[0]);
+                td
+                td
+                    - playerDisplay(players[1]);
+                - if (players[1].sourcePlayer.steam_id3)
+                    td.bg-success
+                        - playerDisplay(players[1].sourcePlayer);
+                - else
+                    td
+
+table.table
+    thead
+        tr
+            th Not on any roster
+            th ozfortress profile
+    tbody
+        - foreach (player; match.extraSourcePlayers)
+            tr
+                td.bg-danger
+                    - playerDisplay(player);
+                - if (player.user)
+                    td
+                        - playerDisplay(player.user);
+                - else
+                    td

@@ -1,0 +1,55 @@
+extends layout.dt
+
+block head
+    title Verify Rosters
+    link(rel="shortcut icon", type="image/x-icon", href="favicon.ico")
+
+block content
+    script.
+        function checkRosters(match, status) {
+            $.ajax({
+                type: 'POST',
+                url: '/check',
+                data: { match: match, status: status },
+                dataType: 'html'
+            })
+             .done(function(data) {
+                $('#result').html(data);
+            })
+             .fail(function() {
+                $('#result').html('Error sending request');
+            });
+        }
+
+        $(function() {
+            $('#form').on('submit', function(e) {
+                e.preventDefault();
+
+                var match = $('#form-match').val();
+                var status = $('#form-status').val();
+                checkRosters(match, status);
+            });
+        });
+
+    h1 Verify Match Rosters #[h3 For #[a(href="https://warzone.ozfortress.com", target="_blank") ozfortress]]
+
+    | This is a simple tool for verifying that the people playing in your
+    | ozfortress match are actually who they say they are.
+    br
+    | Simply paste your match link and the output of #[code status] from the
+    | #[a(href="https://wiki.teamfortress.com/wiki/Console", target="_blank") developer console].
+
+    hr
+
+    form#form
+        .form-group
+            label Match Link or ID
+            input.form-control#form-match(type="text")
+        .form-group
+            label Status (Paste from TF2 developer console)
+            textarea.form-control#form-status(type="text", rows=5)
+        button.btn.btn-primary#form-submit(type="submit") Validate
+
+    hr
+
+    #result

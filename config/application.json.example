@@ -1,0 +1,6 @@
+{
+    "bind-addresses": ["::1", "127.0.0.1"],
+    "port": 8080,
+    "api-endpoint": "http://localhost:3000",
+    "api-key": "123456abcdef"
+}
