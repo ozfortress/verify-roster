@@ -87,7 +87,10 @@ struct SourcePlayer {
 }
 
 void index(HTTPServerRequest req, HTTPServerResponse res) {
-    res.render!("index.dt");
+    string link;
+    if ("link" in req.query) link = req.query["link"];
+
+    res.render!("index.dt", link);
 }
 
 void check(HTTPServerRequest req, HTTPServerResponse res) {

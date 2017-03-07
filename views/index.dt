@@ -44,7 +44,7 @@ block content
     form#form
         .form-group
             label Match Link or ID
-            input.form-control#form-match(type="text")
+            input.form-control#form-match(type="text", value=link)
         .form-group
             label Status (Paste from TF2 developer console)
             textarea.form-control#form-status(type="text", rows=5)
