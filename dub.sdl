@@ -3,8 +3,10 @@ description "User validation of rosters for citadel"
 authors "Benjamin Schaaf"
 copyright "Copyright © 2017, Benjamin Schaaf"
 license "GPLv3"
-dependency "vibe-d" version="~>0.7.26"
+
 versions "VibeDefaultMain"
 
-preBuildCommands "mkdir -p bin"
-targetName "bin/verify-roster"
+targetPath "bin"
+
+dependency "vibe-d" version="~>0.8.1"
+dependency "vibe-rcon" version="~>1.0.0"

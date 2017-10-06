@@ -8,8 +8,10 @@ import std.algorithm;
 import std.exception;
 
 import vibe.d;
+import vibe.rcon;
 
 const CONFIG_FILE = "config/application.json";
+const READ_TIMEOUT = 2.dur!"seconds";
 
 const Json settings;
 
@@ -96,7 +98,7 @@ void index(HTTPServerRequest req, HTTPServerResponse res) {
 void check(HTTPServerRequest req, HTTPServerResponse res) {
     // Validate form data
     if ("match" !in req.form) return res.renderError("Missing Match Link");
-    if ("status" !in req.form) return res.renderError("Missing Status");
+    if ("string" !in req.form && "status" !in req.form) return res.renderError("Missing Connect String or Status");
 
     // Get match link
     auto matchLink = req.form["match"];
@@ -110,8 +112,23 @@ void check(HTTPServerRequest req, HTTPServerResponse res) {
     }
     auto match_id = matchLink.split("/")[$-1].to!int;
 
-    // Get status paste
-    auto status = req.form["status"];
+    string status;
+    if ("string" in req.form && req.form["string"] != "") {
+        // Get it through RCON
+        try {
+            auto connectString = req.form["string"];
+            auto client = parseConnectString(connectString);
+            status = client.exec("status");
+        } catch (Exception e) {
+            logError("%s", e);
+            res.renderError(e.msg);
+            return;
+        }
+    } else if (req.form["status"] != "") {
+        status = req.form["status"];
+    } else {
+        return res.renderError("Missing Connect String or Status");
+    }
 
     Json json;
     try {
@@ -122,10 +139,9 @@ void check(HTTPServerRequest req, HTTPServerResponse res) {
             // Fill in match data
             auto match = json["match"].deserializeJson!APIMatch;
             parseStatus(status, match);
-            getOzfortressUsers(match);
+            getOZFortressUsers(match);
 
-            res.render!("check.dt", endpoint, match);
-            return;
+            return res.render!("check.dt", endpoint, match);
         }
     } catch(Exception e) {
         logError("%s", e);
@@ -187,7 +203,7 @@ void parseStatus(string status, ref APIMatch match) {
     }
 }
 
-void getOzfortressUsers(APIMatch match) {
+void getOZFortressUsers(APIMatch match) {
     auto tasks = match.extraSourcePlayers.map!((ref player) {
         return runTask({
             try {
@@ -210,4 +226,50 @@ void getOzfortressUsers(APIMatch match) {
     foreach (task; tasks) {
         task.join();
     }
+}
+
+RCONClient parseConnectString(string connectString) {
+    auto commands = connectString.split(";");
+
+    string address;
+    string password;
+    string rconPassword;
+
+    foreach (command; commands) {
+        command = command.strip();
+
+        auto value = parseSourceCommandVariale(command, "connect");
+        if (value !is null) address = value;
+
+        value = parseSourceCommandVariale(command, "password");
+        if (value !is null) password = value;
+
+        value = parseSourceCommandVariale(command, "rcon_password");
+        if (value !is null) rconPassword = value;
+    }
+
+    enforce(address !is null, "Missing connect in connect string");
+    enforce(rconPassword !is null, "Missing rcon_password in connect string");
+
+    auto splits = address.split(":");
+
+    auto connection = connectTCP(splits[0], splits[1].to!ushort);
+    connection.readTimeout = READ_TIMEOUT;
+
+    auto client = new RCONClient(connection);
+    client.authenticate(rconPassword);
+    return client;
+}
+
+string parseSourceCommandVariale(string command, string variable) {
+    command = command.stripLeft();
+
+    auto start = variable ~ " ";
+    if (!command.startsWith(start)) return null;
+
+    auto value = command[start.length..$].strip();
+
+    if (value[0] == '"') value = value[1..$ - 1];
+
+    return value;
 }

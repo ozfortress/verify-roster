@@ -6,11 +6,11 @@ block head
 
 block content
     script.
-        function checkRosters(match, status) {
+        function checkRosters(match, string, status) {
             $.ajax({
                 type: 'POST',
                 url: '/check',
-                data: { match: match, status: status },
+                data: { match: match, string: string, status: status },
                 dataType: 'html'
             })
              .done(function(data) {
@@ -26,8 +26,9 @@ block content
                 e.preventDefault();
 
                 var match = $('#form-match').val();
+                var string = $('#form-string').val();
                 var status = $('#form-status').val();
-                checkRosters(match, status);
+                checkRosters(match, string, status);
             });
         });
 
@@ -36,8 +37,10 @@ block content
     | This is a simple tool for verifying that the people playing in your
     | ozfortress match are actually who they say they are.
     br
-    | Simply paste your match link and the output of #[code status] from the
-    | #[a(href="https://wiki.teamfortress.com/wiki/Console", target="_blank") developer console].
+    | Simply paste your match link and connect string (including #[code rcon_password]) and we'll check for you.
+    br
+    | Or you can type #[code status] into your #[a(href="https://wiki.teamfortress.com/wiki/Console", target="_blank") developer console]
+    | and paste the output.
 
     hr
 
@@ -45,9 +48,19 @@ block content
         .form-group
             label Match Link or ID
             input.form-control#form-match(type="text", value=link)
+
+        hr
+
         .form-group
-            label Status (Paste from TF2 developer console)
+            label Connect String
+            input.form-control#form-string(type="text", placeholder="connect _; sv_password _; rcon_password _")
+
+        label OR
+
+        .form-group
+            label Status (Paste from #[a(href="https://wiki.teamfortress.com/wiki/Console", target="_blank") TF2 developer console])
             textarea.form-control#form-status(type="text", rows=5)
+
         button.btn.btn-primary#form-submit(type="submit") Validate
 
     hr
