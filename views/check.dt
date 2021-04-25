@@ -32,22 +32,33 @@ table.table
             th #[a(href="#{endpoint}/teams/#{match.away_team.team_id}", target="_blank")= match.away_team.name]
             th
     tbody
-        - foreach (players; zip(match.home_team.players, match.away_team.players))
+        - foreach (i; 0..max(match.home_team.players.length, match.away_team.players.length))
             tr
-                - if (players[0].sourcePlayer.steam_id3)
-                    td.bg-success
-                        - playerDisplay(players[0].sourcePlayer);
+                - if (i < match.home_team.players.length)
+                    - auto player = match.home_team.players[i];
+                    - if (player.sourcePlayer.steam_id3)
+                        td.bg-success
+                            - playerDisplay(player.sourcePlayer);
+                    - else
+                        td
+                    td
+                        - playerDisplay(player);
                 - else
                     td
+                    td
                 td
-                    - playerDisplay(players[0]);
-                td
-                td
-                    - playerDisplay(players[1]);
-                - if (players[1].sourcePlayer.steam_id3)
-                    td.bg-success
-                        - playerDisplay(players[1].sourcePlayer);
+
+                - if (i < match.away_team.players.length)
+                    - auto player = match.away_team.players[i];
+                    td
+                        - playerDisplay(player);
+                    - if (player.sourcePlayer.steam_id3)
+                        td.bg-success
+                            - playerDisplay(player.sourcePlayer);
+                    - else
+                        td
                 - else
+                    td
                     td
 
 table.table
