@@ -67,6 +67,7 @@ struct APILeague {
 
 struct APIRoster {
     ulong id;
+    ulong team_id;
     string name;
     APIUser[] players;
 }

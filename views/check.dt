@@ -27,9 +27,9 @@ table.table
             th In Game
         tr
             th
-            th #[a(href="#{endpoint}/rosters/#{match.home_team.id}", target="_blank")= match.home_team.name]
+            th #[a(href="#{endpoint}/teams/#{match.home_team.team_id}", target="_blank")= match.home_team.name]
             th vs
-            th #[a(href="#{endpoint}/rosters/#{match.away_team.id}", target="_blank")= match.away_team.name]
+            th #[a(href="#{endpoint}/teams/#{match.away_team.team_id}", target="_blank")= match.away_team.name]
             th
     tbody
         - foreach (players; zip(match.home_team.players, match.away_team.players))
