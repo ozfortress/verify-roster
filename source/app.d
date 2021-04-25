@@ -19,7 +19,9 @@ shared static this() {
     // Load configs
     auto json = cast(string)readFile(CONFIG_FILE);
     settings = parseJson(json, null, CONFIG_FILE);
+}
 
+void main() {
     // Setup Server
     auto serverSettings = new HTTPServerSettings;
     serverSettings.port = settings["port"].to!ushort;
@@ -47,6 +49,8 @@ shared static this() {
     router.get("/favicon.ico", serveStaticFile("public/favicon.ico"));
 
     listenHTTP(serverSettings, router);
+
+    runApplication();
 }
 
 struct APIMatch {

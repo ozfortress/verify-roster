@@ -4,9 +4,7 @@ authors "Benjamin Schaaf"
 copyright "Copyright © 2017, Benjamin Schaaf"
 license "GPLv3"
 
-versions "VibeDefaultMain"
-
 targetPath "bin"
 
-dependency "vibe-d" version="~>0.8.1"
-dependency "vibe-rcon" version="~>1.0.0"
+dependency "vibe-d" version="~>0.9.3"
+dependency "vibe-rcon" version="~>1.1.0"
